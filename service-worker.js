@@ -12,7 +12,7 @@
   │  imagem, o visual, etc.) e subir a alteração pro GitHub, você PRECISA  │
   │  trocar o número da versão na linha abaixo:                           │
   │                                                                       │
-  │      "trunfo-egipcio-v1"  ->  "trunfo-egipcio-v2"  ->  "...-v3" ...    │
+  │      "trunfo-egipcio-v2"  ->  "trunfo-egipcio-v3"  ->  "...-v4" ...    │
   │                                                                       │
   │  Se você esquecer de trocar, os jogadores continuarão vendo a versão  │
   │  ANTIGA mesmo depois de você atualizar. Trocar o número força todo    │
@@ -20,7 +20,7 @@
   └─────────────────────────────────────────────────────────────────────┘
 */
 
-const CACHE_VERSION = "trunfo-egipcio-v2";
+const CACHE_VERSION = "trunfo-egipcio-v3";
 
 // Lista de tudo que precisa ser guardado para o jogo rodar offline.
 const ARQUIVOS = [

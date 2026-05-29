@@ -28,57 +28,48 @@
   <!-- Botão de som: fixo no canto superior direito, visível em todas as telas. Começa desligado. -->
   <button id="btn-som" type="button" aria-label="Ligar a música" title="Música: desligada">🔇</button>
 
-  <!-- TELA INICIAL -->
+  <!-- ===================== TELA INICIAL ===================== -->
   <section id="tela-inicial" class="tela ativa">
     <h1>Super Trunfo Egípcio</h1>
     <p class="subtitulo">Os deuses, faraós e criaturas do Egito antigo em 32 cartas</p>
-    <button id="btn-iniciar" class="botao-grande">Iniciar Jogo</button>
+    <button id="btn-iniciar" class="botao-grande">Jogar</button>
     <div class="regras">
       <h3>Como jogar</h3>
       <ul>
-        <li>Você recebe 16 cartas. A CPU recebe as outras 16.</li>
-        <li>Quem vence a rodada escolhe o atributo da próxima.</li>
-        <li>Em caso de empate, as cartas vão para a pilha de disputa e o próximo vencedor leva tudo.</li>
-        <li>Vence quem ficar com todas as cartas.</li>
-        <li><strong>Super Trunfo (Amon-Rá):</strong> 10 em todos os atributos — só empata.</li>
+        <li>De 2 a 4 jogadores. As 32 cartas são divididas entre todos.</li>
+        <li>O jogador da vez escolhe um atributo; todos viram a carta do topo e comparam.</li>
+        <li>Quem tiver o maior valor leva todas as cartas da mesa e escolhe o próximo atributo.</li>
+        <li>Empate no topo: as cartas vão para a <strong>pilha de disputa</strong> e <strong>só os empatados</strong> disputam, em uma rodada extra entre eles. Quem vencer leva tudo e passa a escolher.</li>
+        <li>Quem fica sem cartas é <strong>eliminado</strong>. Vence o último de pé.</li>
+        <li><strong>Super Trunfo (Amon-Rá):</strong> 10 em todos os atributos — nunca perde, só empata.</li>
       </ul>
     </div>
   </section>
 
-  <!-- TELA DO JOGO -->
+  <!-- ===================== TELA DE LOBBY (montagem da partida) ===================== -->
+  <section id="tela-lobby" class="tela">
+    <h1 class="titulo-medio">Montar partida</h1>
+    <p class="subtitulo">Defina cada assento. O assento 1 é você.</p>
+
+    <div id="assentos"><!-- preenchido pelo script --></div>
+
+    <p id="aviso-lobby" class="aviso-lobby"></p>
+
+    <div class="lobby-botoes">
+      <button id="btn-voltar-lobby" class="botao-secundario">Voltar</button>
+      <button id="btn-comecar" class="botao-grande" disabled>Começar</button>
+    </div>
+  </section>
+
+  <!-- ===================== TELA DO JOGO ===================== -->
   <section id="tela-jogo" class="tela">
-    <header id="placar">
-      <div class="bloco-placar">
-        <span class="rotulo">Você</span>
-        <span class="numero" id="cartas-jogador">0</span>
-      </div>
-      <div class="bloco-placar">
-        <span class="rotulo">Pilha de disputa</span>
-        <span class="numero" id="cartas-pilha">0</span>
-      </div>
-      <div class="bloco-placar">
-        <span class="rotulo">CPU</span>
-        <span class="numero" id="cartas-cpu">0</span>
-      </div>
-    </header>
+    <header id="placar"><!-- preenchido pelo script --></header>
 
-    <main id="campo-batalha">
-      <div class="lado">
-        <div class="rotulo-lado">Sua carta</div>
-        <div class="carta" id="carta-jogador"></div>
-      </div>
-
-      <div id="separador-vs">VS</div>
-
-      <div class="lado">
-        <div class="rotulo-lado">CPU</div>
-        <div class="carta" id="carta-cpu"></div>
-      </div>
-    </main>
+    <main id="mesa"><!-- preenchido pelo script (escolha / revelação) --></main>
 
     <div id="status">
       <p id="mensagem">Escolha um atributo</p>
-      <button id="btn-proxima" class="botao-grande" style="display:none">Próxima Rodada</button>
+      <button id="btn-proxima" class="botao-grande" style="display:none">Próxima rodada</button>
     </div>
 
     <div id="botoes-atributos">
@@ -89,11 +80,11 @@
     </div>
   </section>
 
-  <!-- TELA DE FIM DE JOGO -->
+  <!-- ===================== TELA DE FIM ===================== -->
   <section id="tela-fim" class="tela">
     <h1 id="resultado-final"></h1>
     <p id="resumo-final"></p>
-    <button id="btn-recomecar" class="botao-grande">Jogar Novamente</button>
+    <button id="btn-recomecar" class="botao-grande">Jogar novamente</button>
   </section>
 
   <script src="cards.js"></script>
