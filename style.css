@@ -382,6 +382,14 @@ h1 {
 
 .slot-mesa.perdedora .carta { opacity: 0.55; }
 
+/* Carta do próprio jogador na fase de escolha (sempre visível para ele) */
+.slot-mesa.local .carta {
+  border-color: #ffd700;
+  box-shadow: 0 0 22px rgba(255, 215, 0, 0.5);
+}
+
+.badge-valor.oculto { opacity: 0.45; font-style: italic; }
+
 .badge-valor {
   background: rgba(212, 175, 55, 0.15);
   border: 1px solid rgba(212, 175, 55, 0.4);

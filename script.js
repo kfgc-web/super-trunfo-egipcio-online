@@ -305,12 +305,10 @@ function proximaFase() {
   const quem = escolhedorVigente(estado);
   const jog = estado.jogadores[quem];
 
-  if (jog.tipo === "humano") {
-    renderFaseEscolha(quem);            // mostra a carta dele + libera os atributos
-  } else {
-    renderFaseEscolhaBot(quem);         // mostra "bot pensando"
+  renderFaseEscolha();                   // mostra a carta do jogador local + (se humano) os atributos
+  if (jog.tipo === "bot") {
     setTimeout(() => {
-      if (!estado) return;              // partida pode ter sido encerrada
+      if (!estado) return;               // partida pode ter sido encerrada
       const attr = botEscolheAtributo(estado, quem);
       aplicarEscolha(attr);
     }, ESPERA_BOT);
@@ -377,51 +375,65 @@ function renderPlacar() {
   document.getElementById("placar").innerHTML = blocosJog + blocoPilha;
 }
 
-// Fase de escolha de um HUMANO: mostra a carta dele e libera os botões de atributo.
-function renderFaseEscolha(idJog) {
-  const jog = estado.jogadores[idJog];
-  const carta = jog.mao[0];
-
-  const titulo = estado.desempate ? "Desempate" : "Sua vez";
-  document.getElementById("mesa").innerHTML = `
-    <div class="mesa-escolha">
-      <div class="rotulo-lado" style="--cor:${jog.cor}">${titulo} — ${jog.nome}</div>
-      <div class="carta carta-grande">${htmlCartaCompleta(carta)}</div>
-    </div>`;
-
-  // Preenche e habilita os botões com os valores da carta do escolhedor.
-  document.querySelectorAll(".btn-attr").forEach(btn => {
-    const a = btn.dataset.attr;
-    btn.querySelector(".valor-attr").textContent = carta[a];
-    btn.disabled = false;
-  });
-  mostrarAtributos(true);
-
-  const msg = document.getElementById("mensagem");
-  msg.className = "";
-  msg.textContent = estado.desempate
-    ? `Empate! ${jog.nome}, escolha o atributo do desempate.`
-    : `${jog.nome}, escolha um atributo.`;
-  document.getElementById("btn-proxima").style.display = "none";
+// Entre os participantes da comparação atual, o primeiro humano vivo (menor índice).
+// É a "perspectiva" da tela quando quem escolhe é um bot. null se não houver humano em jogo.
+// (Na fase online, isto vira simplesmente "o dono deste aparelho".)
+function humanoDeReferencia(estado) {
+  const part = participantesAtuais(estado);
+  const humanos = part.filter(id => estado.jogadores[id].tipo === "humano" && !estado.jogadores[id].eliminado);
+  return humanos.length ? Math.min(...humanos) : null;
 }
 
-// Fase de escolha de um BOT: cartas viradas para baixo e aviso.
-function renderFaseEscolhaBot(idJog) {
-  const jog = estado.jogadores[idJog];
-  const participantes = participantesAtuais(estado);
+// Fase de escolha (humano OU bot).
+// Princípio do Super Trunfo: cada jogador SEMPRE vê a própria carta; as dos
+// outros ficam viradas até a revelação. Aqui:
+//  - se quem escolhe é HUMANO, a perspectiva é dele (vê a própria carta + botões);
+//  - se quem escolhe é um BOT, a perspectiva é do humano de referência
+//    (a carta dele continua à mostra, mas sem botões — ele só assiste).
+function renderFaseEscolha() {
+  const escolhe = escolhedorVigente(estado);
+  const ehBot = estado.jogadores[escolhe].tipo === "bot";
+  const local = ehBot ? humanoDeReferencia(estado) : escolhe; // de quem é a carta visível
+  const part = participantesAtuais(estado);
 
-  const cartas = participantes.map(id => {
+  const cartasHTML = part.map(id => {
     const j = estado.jogadores[id];
-    return `<div class="slot-mesa"><span class="slot-nome" style="--cor:${j.cor}">${j.nome}</span>
-              <div class="carta carta-media">${htmlCartaVerso()}</div></div>`;
+    const ehLocal = id === local;
+    const corpo = ehLocal ? htmlCartaCompleta(j.mao[0]) : htmlCartaVerso();
+    const selo = ehLocal
+      ? `<span class="badge-valor">Sua carta</span>`
+      : `<span class="badge-valor oculto">oculta</span>`;
+    return `
+      <div class="slot-mesa ${ehLocal ? "local" : ""}">
+        <span class="slot-nome" style="--cor:${j.cor}">${j.nome}</span>
+        <div class="carta carta-media">${corpo}</div>
+        ${selo}
+      </div>`;
   }).join("");
 
-  document.getElementById("mesa").innerHTML = `<div class="mesa-grid">${cartas}</div>`;
-  mostrarAtributos(false);
+  document.getElementById("mesa").innerHTML = `<div class="mesa-grid">${cartasHTML}</div>`;
 
   const msg = document.getElementById("mensagem");
-  msg.className = "";
-  msg.textContent = `${jog.nome} está escolhendo…`;
+  msg.className = estado.desempate ? "empate" : "";
+
+  if (ehBot) {
+    mostrarAtributos(false);
+    msg.textContent = estado.desempate
+      ? `${estado.jogadores[escolhe].nome} está escolhendo o desempate…`
+      : `${estado.jogadores[escolhe].nome} está escolhendo…`;
+  } else {
+    const carta = estado.jogadores[escolhe].mao[0];
+    document.querySelectorAll(".btn-attr").forEach(btn => {
+      const a = btn.dataset.attr;
+      btn.querySelector(".valor-attr").textContent = carta[a];
+      btn.disabled = false;
+    });
+    mostrarAtributos(true);
+    msg.textContent = estado.desempate
+      ? `Empate! ${estado.jogadores[escolhe].nome}, escolha o atributo do desempate.`
+      : `${estado.jogadores[escolhe].nome}, escolha um atributo.`;
+  }
+
   document.getElementById("btn-proxima").style.display = "none";
 }
 
